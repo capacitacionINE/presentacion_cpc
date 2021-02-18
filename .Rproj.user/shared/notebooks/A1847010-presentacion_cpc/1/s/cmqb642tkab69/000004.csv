@@ -1,0 +1,4 @@
+"0","library(readr);library(tidyverse);library(readxl);library(kableExtra)"
+"0","enia <-  read_csv(""data/ENIA_F3F4_CPC.csv"")"
+"0","names(enia) <- tolower(names(enia))"
+"0",""

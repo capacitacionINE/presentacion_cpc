@@ -1,0 +1,4 @@
+"0","clase_n1 <- unicos %>% "
+"0","  count(cpc) %>% "
+"0","  filter(n == 1) %>% "
+"0","  nrow()"

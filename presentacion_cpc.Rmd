@@ -1,0 +1,314 @@
+---
+title: "Antecedentes clasificador cpc"
+subtitle: "shiny"  
+author: 
+date: '`r Sys.Date()`'
+output:
+  xaringan::moon_reader:
+    seal: false
+    lib_dir: libs
+    css: xaringan-themer.css
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+#![](imagenes/logo_portada2.PNG)
+
+---
+
+
+class: center, middle
+
+.linea-superior[]
+.linea-inferior[]
+
+
+<img src="imagenes/logo_portada2.png" width="200" />
+
+
+## Antecedentes clasificador CPC
+
+## Proyecto Estratégico de Servicios Compartidos
+
+### Febrero 2021
+
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(message = FALSE) 
+knitr::opts_chunk$set(echo = FALSE, warning = F) 
+
+```
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+#style_duo_accent(
+ # primary_color = "#1381B0",
+  #secondary_color = "#FF961C",
+  #inverse_header_color = "#FFFFFF"
+#)
+```
+
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Antecedentes
+
+```{r}
+library(readr);library(tidyverse);library(readxl);library(kableExtra);library(forcats)
+enia <-  read_csv("data/ENIA_F3F4_CPC.csv")
+names(enia) <- tolower(names(enia))
+
+```
+
+
+```{r}
+# Eliminar casos con NA y repetidos
+unicos <- enia %>% 
+  filter(!is.na(cpc) & !is.na(nombre_producto)) %>% 
+  distinct() %>% 
+  mutate(cpc = as.character(cpc))
+
+n_registros <-  formatC(nrow(unicos),  big.mark = ".")
+```
+
+```{r}
+# Número de categorías
+n_clases <- length(unique(unicos$cpc))
+n_clases <-  formatC(n_clases,  big.mark = ".")
+
+```
+Existen `r n_clases` categorías en los datos históricos de la ENIA
+
+--
+
+Se cuenta con  `r n_registros` registros
+
+--
+
+La EPF cuenta con más de **un millón** de registros para una tarea similar
+
+
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Antecedentes
+
+### Problema típico de clases desbalanceadas
+
+```{r, fig.align='center', fig.width=10}
+# frecuencia de cada categoría
+unicos %>% 
+  count(cpc) %>% 
+  ggplot(aes(x = cpc, y = n)) +
+  geom_bar(stat = "identity") + 
+  theme(axis.text.x = element_blank(),
+        axis.title.x = element_blank(),
+        axis.ticks.x  = element_blank() )
+
+
+```
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Antecedentes
+
+### Algunos estadísticos de resumen
+
+```{r}
+# Descriptivos de las frecuencias
+tabla_resumen <- unicos %>% 
+  count(cpc) %>% 
+  summarise(min = min(n),
+            max = max(n),
+            media = round(mean(n), 1),
+            q1 = quantile(n, probs = 0.25),
+            mediana = median(n),
+            q3 = quantile(n, probs = 0.75))
+
+tabla_resumen %>% 
+  kbl() %>%
+  kable_paper("hover", full_width = F)
+
+
+```
+
+```{r}
+clase_n1 <- unicos %>% 
+  count(cpc) %>% 
+  filter(n == 1) %>% 
+  nrow()
+```
+### Existen `r clase_n1` categorías con solo 1 registro
+
+--
+
+Esto complejiza bastante el proceso entrenamiento
+
+--
+
+Se requiere, al menos, 2 ejemplos de cada categoría para evaluar el poder predictivo del modelo
+
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Pruebas preliminares
+
+```{r, fig.align='center'}
+cpc <-  read_csv('data/pred_red_cpc.csv')
+subclase <-  read_csv('data/pred_red_subclase.csv')
+
+tabla <- cpc %>% 
+  mutate(coincide = if_else(predicho == real, 1, 0)) %>%
+  group_by(coincide) %>% 
+  summarise(total = n()) %>% 
+  ungroup() %>% 
+  mutate(porcentaje = total / sum(total) * 100,
+         coincide = if_else(coincide == 0, "no", "sí")) 
+
+ggplot(tabla, aes(x = coincide, y = porcentaje, fill = coincide)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label= round(porcentaje, 1)), 
+             position=position_dodge(width=0.9), 
+             vjust=-0.25) +
+  labs(title = "Coincidencia 7 dígitos (nivel más desagregado)") +
+  theme(plot.title = element_text( hjust = 0.5, size = 18),
+        plot.subtitle =  element_text(hjust = 0.5,  size = 16),
+        legend.position = "none")
+
+
+```
+
+
+
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Pruebas preliminares
+
+```{r, fig.align='center'}
+tabla <- subclase %>% 
+  mutate(coincide = if_else(predicho == real, 1, 0)) %>%
+  group_by(coincide) %>% 
+  summarise(total = n()) %>% 
+  ungroup() %>% 
+  mutate(porcentaje = total / sum(total) * 100,
+         coincide = if_else(coincide == 0, "no", "sí"))
+
+ggplot(tabla, aes(x = coincide, y = porcentaje, fill = coincide)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label= round(porcentaje, 1)), 
+             position=position_dodge(width=0.9), 
+             vjust=-0.25) +
+  labs(title = "Coincidencia a 5 dígitos") +
+  theme(plot.title = element_text( hjust = 0.5, size = 18),
+        plot.subtitle =  element_text(hjust = 0.5,  size = 16),
+        legend.position = "none")
+
+```
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Pruebas preliminares
+
+```{r, fig.align='center'}
+source("helpers_analisis.R")
+
+cpc2 <- cpc %>% 
+  mutate(prob_max = prob)
+
+cortes <- map(seq(0, 0.98, 0.02), ~cortar_evaluar(.x, cpc2) %>% 
+      mutate(corte = .x)) %>% 
+  reduce(bind_rows) %>% 
+  mutate(porcentaje_auto = total / completa,
+         porcentaje_error = 1 - por_acierto,
+         porcentaje_manual = 1 - porcentaje_auto)
+  
+# Graficar relación entre error y porcentaje codificado automáticamente
+cortes %>% 
+  ggplot(aes(x = porcentaje_manual * 100, y = porcentaje_error * 100  )) +
+  geom_line() +
+  geom_point() +
+  geom_vline(xintercept = 5, color = "red", linetype = "dashed") +
+  scale_x_continuous(breaks = seq(0, 90, 5)) +
+  scale_y_continuous(breaks = seq(0, 20, 1)) +
+  labs(y = "% de error", x = "% codificado manualmente") +
+  labs(title =  "Relación entre codificación manual y error",
+       subtitle = "7 dígitos") +
+  theme(plot.title = element_text( hjust = 0.5, size = 18),
+        plot.subtitle =  element_text(hjust = 0.5,  size = 16))
+```
+
+
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Pruebas preliminares
+
+
+```{r, fig.align='center'}
+source("helpers_analisis.R")
+
+sc <- subclase %>% 
+  mutate(prob_max = prob)
+
+cortes <- map(seq(0, 0.98, 0.02), ~cortar_evaluar(.x, sc) %>% 
+      mutate(corte = .x)) %>% 
+  reduce(bind_rows) %>% 
+  mutate(porcentaje_auto = total / completa,
+         porcentaje_error = 1 - por_acierto,
+         porcentaje_manual = 1 - porcentaje_auto)
+  
+# Graficar relación entre error y porcentaje codificado automáticamente
+cortes %>% 
+  ggplot(aes(x = porcentaje_manual * 100, y = porcentaje_error * 100  )) +
+  geom_line() +
+  geom_point() +
+  geom_vline(xintercept = 5, color = "red", linetype = "dashed") +
+  scale_x_continuous(breaks = seq(0, 90, 5)) +
+  scale_y_continuous(breaks = seq(0, 20, 1)) +
+  labs(title =  "Relación entre codificación manual y error",
+       subtitle = "5 dígitos",
+       y = "% de error", 
+       x = "% codificado manualmente") +
+  theme(plot.title = element_text( hjust = 0.5, size = 18),
+        plot.subtitle =  element_text(hjust = 0.5,  size = 16))
+```
+
+
+
+---
+
+class: center, middle
+
+.linea-superior[]
+.linea-inferior[]
+<img src="imagenes/logo_portada2.png" width="200" />
+
+## Antecedentes clasificador CPC
+
+## Proyecto Estratégico de Servicios Compartidos
+
+### Febrero 2021
+

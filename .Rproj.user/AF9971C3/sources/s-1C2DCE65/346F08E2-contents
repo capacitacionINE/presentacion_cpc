@@ -1,0 +1,800 @@
+---
+title: "Presentación CEPAL"
+subtitle: "Codificación automática"  
+author: 
+date: '`r Sys.Date()`'
+output:
+  xaringan::moon_reader:
+    seal: false
+    lib_dir: libs
+    css: xaringan-themer.css
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+#![](imagenes/logo_portada2.PNG)
+
+---
+
+
+class: center, middle
+
+.linea-superior[]
+.linea-inferior[]
+
+
+<img src="imagenes/logo_portada2.png" width="200" />
+
+
+## Experiencia codificación automática INE Chile
+
+## Red de transmisión del conocimiento CEPAL
+
+## Codificación automatizada
+
+### Enero 2020
+
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(message = FALSE) 
+```
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+#style_duo_accent(
+ # primary_color = "#1381B0",
+  #secondary_color = "#FF961C",
+  #inverse_header_color = "#FFFFFF"
+#)
+```
+
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Contenidos
+
+- Metodología para la codificación automática
+
+--
+
+- Algunos resultados
+
+
+--
+
+## Énfasis en la metodología
+
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Introducción
+
+Algunos datos levantados en el marco de la producción estadística corresponden a texto "libre" 
+- Ocupación
+- Actividad económica
+- Producción
+- Consumo
+
+--
+
+Estos datos deben ser codificados, para que sean útiles desde el punto de vista estadístico 
+
+--
+
+.center[
+*Auxiliar de aseo. Limpió y realizó orden en instalaciones*
+]
+
+
+
+--
+
+.center[
+## ¿Cómo se realiza la tarea de codificación?
+
+<img src="imagenes/pensando.png" width="200" />
+
+
+]
+
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Introducción
+
+Contamos con clasificadores para esta tarea
+- CIUO
+- CAENES (CIIU para encuestas de hogares)
+- CIIU 
+- CCIF (COICOP)
+
+--
+
+## Permiten ordenar jerárquicamente distintos fenónemos 
+
+--
+
+.center[
+*Auxiliar de aseo. Limpió y realizó orden en instalaciones*
+]
+
+
+--
+
+El clasificador CIUO nos dice que esto corresponde al Gran Grupo 9 
+
+--
+
+## Históricamente, esta tarea ha sido intensiva en trabajo manual
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Alternativas
+
+Las oficinas de estadísticas abordan la tarea de codificación mediante distintas estrategias
+
+- Codificación manual
+
+- Codificación automática
+
+- Codificación manual asistida
+
+
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Alternativas
+
+Las oficinas de estadísticas abordan la tarea de codificación mediante distintas estrategias
+
+- Codificación manual
+
+.caja-texto[
+- Codificación automática
+]
+
+- Codificación manual asistida
+
+
+--
+
+**Codificación automática**
+
+- Por reglas 
+
+- Aprendizaje de máquinas (*machine learning*)
+
+
+--
+
+En el sistema basado en reglas el analista debe generar a priori las reglas  
+
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Codificación por reglas
+
+Si están presentes *auxiliar de aseo* y *limpió*, uso el código **91** 
+
+Si está presente *obrero agrícola*, uso el código **92**
+
+--
+
+```{r, eval=FALSE}
+
+if (str_detect(texto, "auxiliar de aseo") & 
+    str_detect(texto, "limpió" )) {
+  codigo <- 91
+}
+```
+
+--
+
+```{r, eval=FALSE}
+
+if (str_detect(texto, "obrero agrícola")) {
+  codigo <- 92
+}
+
+```
+
+--
+
+✔️ Implementa exactamente los criterios del clasificador
+
+--
+
+❌ Requiere de una gran cantidad de trabajo en la elaboración de las reglas
+
+--
+
+❌ Es muy costoso  llegar a la totalidad de los casos
+
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Codificación por *machine learning*
+
+En lugar de que el analista genere las reglas, dejamos que un algoritmo las "aprenda" a partir de los datos
+
+--
+
+.center[
+<img src="imagenes/esquema_aprendizaje.png" width="700" />
+]
+
+<br>
+
+--
+
+.center[
+<img src="imagenes/ejemplos.png" width="700" />
+]
+
+--
+
+## Si tenemos una cantidad razonable de ejemplos, es posible que nuestro algoritmo aprenda las reglas de clasificación
+
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Codificación por *machine learning*
+
+.center[
+<img src="imagenes/predecir_datos.png" width="700" />
+]
+
+Con nuestro algoritmo ya entrenado, podemos predecir la etiqueta de datos nuevos
+
+--
+
+## ¿Qué pasa si los datos nuevos no se parecen a los del entrenamiento?   
+
+
+.center[
+<img src="https://media.giphy.com/media/3o7buirYcmV5nSwIRW/giphy.gif" width="250" />
+]
+
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Pre procesamiento
+
+Edición de las glosas originales
+- Remover signos de puntuación
+- Conversión a minúscula
+- Remover palabras con poco significado (*stopwords*)
+
+--
+
+.center[
+<img src="imagenes/ejemplo_edicion.png" width="600" />
+]
+
+--
+
+Necesitamos representar los textos de manera numérica
+
+--
+
+**Bolsa de palabras (TF-IDF) y Word embeddings**
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Esquema TF-IDF
+
+Una palabra es importante cuando:
+
+- Se repite mucho dentro de una glosa
+
+- Se repite poco dentro de todas las glosas 
+
+--
+
+![](imagenes/matriz_tfidf.PNG)
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Esquema word embeddings
+
+## La representación TF-IDF no captura la semántica de las palabras  
+
+--
+
+Pensemos en las siguientes glosas de actividad económica:
+
+- *elaboración vienesas* (expresión chilena)
+
+- *fabricación salchichas*
+
+--
+
+En el esquema TF-IDF ambos vectores son ortogonales
+
+--
+
+Para una persona es trivial determinar que ambos textos son muy similares 
+
+--
+
+**Word embeddings** es una técnica que permite construir representaciones mucho más ricas semánticamente
+
+--
+
+Estamos usando el trabajo del profesor [Jorge Perez](https://github.com/jorgeperezrojas) 
+
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Esquema word embeddings
+
+## La representación de la palabra [*fabricación*](https://projector.tensorflow.org/?config=https://raw.githubusercontent.com/jorgeperezrojas/jorgeperezrojas.github.io/master/config_emb.json) luce así: 
+
+![](imagenes/vector_fabricacion.PNG)
+
+## Vector de 300 dimensiones con números entre -1 y 1
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Esquema word embeddings
+
+Es necesario generar una representación única para cada glosa
+
+--
+
+Varias alternativas:
+- Media de cada una de las dimensiones
+- Mínimo y máximo de cada dimensión (vector de 600 dimensiones)
+- Media ponderada por tf-idf
+
+--
+
+*extracción producción cobre*
+
+```{r, echo=FALSE}
+library(tibble);library(purrr)
+extraccion <- runif(5, min = -1, max = 1)
+produccion <- runif(5, min = -1, max = 1)
+cobre <- runif(5, min = -1, max = 1)
+
+vectores <- tibble(extraccion, produccion, cobre) %>%
+  t() 
+min <- apply(vectores, 2,  min)
+max <- apply(vectores, 2,  max)
+
+vectores
+
+```
+
+
+## Estamos utilizando mínimos y máximos
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Nuestra metodología 
+
+- Representación de textos: *Word embeddings*
+
+- Mínimos y máximos de cada dimensión
+
+- Algoritmos usados: **xgboost** o **redes neuronales**, dependiendo de las características del dataset de entrenamiento
+
+--
+
+La prueba para cualquier algoritmo es el desempeño en datos que nunca ha visto
+
+--
+
+Contamos con datos (1200 aproximadamente) etiquetados de abril 2020 para CAENES (Actividad Económica)
+
+Provienen de una auditoría realizada manualmente
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Resultados CAENES 
+
+
+.center[
+<img src="imagenes/resultados_caenes.png" width="700" />
+]
+
+
+
+### Utilizar word embeddings mejora el rendimiento de un algoritmo
+
+### Lo más importante es que mejora la estabilidad de la predicción
+
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Resultados CCIF 
+
+La Encuesta de Presupuestos Familiares (EPF) utiliza un clasificador llamado CCIF (COICOP), que tiene más de 1.000 categorías
+
+
+```{r, echo=FALSE, fig.align='center', fig.height=4, fig.width=6.5, warning=FALSE}
+library(readr);library(tidyverse)
+pred <- read_csv("data/pred_red.csv")
+
+pred <- pred %>% 
+  filter(!is.na(real)) %>% # sacar un registro que no hace match
+  rename(prob_max = prob)
+
+
+pred %>% 
+  mutate(coincide = if_else(predicho == real, 1, 0)) %>% 
+  count(coincide) %>% 
+  mutate(porcentaje = round(n / sum(n) * 100, 2)) %>% 
+  ggplot(aes(x = as.factor(coincide), y = porcentaje, fill = as.factor(coincide))) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label=porcentaje), position = position_dodge(width=0.9), vjust = -0.4) +
+  scale_x_discrete(breaks=c(0, 1),
+                   labels=c("No coincide", "Coincide")) +
+  scale_y_continuous(breaks =  seq(0, 95, 10)) +
+  labs(title = "Rendimiento clasificación automática") +
+  theme(plot.title = element_text(hjust = 0.5),
+        legend.position = "none",
+        axis.title.x = element_blank()) 
+
+
+
+```
+
+--
+
+.pull-left[
+
+### ¿Cómo podemos mejorar el resultado?
+
+]
+
+.pull-right[
+<img src="https://media.giphy.com/media/3o7buirYcmV5nSwIRW/giphy.gif" width="180" />
+]
+
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Resultados CCIF
+
+### Idea: Puedo codificar los registros difíciles a mano y dejarle los fáciles a mi algoritmo
+
+.center[
+<img src="https://media.giphy.com/media/LrGHJGtTbT7PO/giphy.gif" width="400" />
+]
+
+--
+
+### Estrategia mixta: parte automática y parte manual
+
+--
+
+### ¿Cómo puedo elegir qué registros debo codificar manualmente?
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Apartar registros complejos
+
+.center[
+<img src="imagenes/experimento.png" width="300" />
+]
+
+
+Receta:
+
+- **paso 1:** Rankear los registros de mayor a menor dificultad (probabilidad asignada por la red)
+
+--
+
+- **paso 2:** Elegir un punto de corte
+
+--
+
+- **paso 3:** Codificamos automáticamente solo lo que está sobre el punto de corte (más fáciles)
+
+--
+
+- **paso 4:** Calcular el error
+
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Resultados CCIF
+
+```{r, echo=F, fig.align='center', fig.height=6, fig.width=7}
+source("helpers_analisis.R")
+
+cortes <- map(seq(0, 0.98, 0.02), ~cortar_evaluar(.x, pred) %>% 
+      mutate(corte = .x)) %>% 
+  reduce(bind_rows) %>% 
+  mutate(porcentaje_auto = total / completa,
+         porcentaje_error = 1 - por_acierto,
+         porcentaje_manual = 1 - porcentaje_auto)
+  
+# Graficar relación entre error y porcentaje codificado automáticamente
+cortes %>% 
+  ggplot(aes(x = porcentaje_manual * 100, y = porcentaje_error * 100  )) +
+  geom_line() +
+  geom_point() +
+  geom_vline(xintercept = 5, color = "red", linetype = "dashed") +
+  scale_x_continuous(breaks = seq(0, 90, 5)) +
+  scale_y_continuous(breaks = seq(0, 15, 1)) +
+  labs(y = "% de error", x = "% codificado manualmente")  
+
+```
+
+### Si clasificamos el 5% a mano, mejoramos más de 3 pp
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Resultado CCIF por categoría
+
+### ¿Cuál es el resultado a nivel de categoría?
+
+--
+
+```{r, echo=FALSE, fig.align='center' }
+library(gganimate)
+cortes_clase <- map(c(0, 0.98), ~cortar_evaluar(.x, pred, "si") %>% #seq(0.0, 0.99, 0.01) 
+                      mutate(corte = !!enquo(.x) )) %>% 
+  reduce(.f = bind_rows)
+
+
+clases_no_borradas <- cortes_clase %>% 
+  group_by(real) %>% 
+  mutate(contar = n()) %>% 
+  ungroup() %>% 
+  filter(contar == max(contar)) %>% 
+  mutate(log_total = log10(total),
+         corte = as.integer(corte * 100),
+         d = substr(codigo, 1, 2)) %>% 
+  group_by(real) %>% 
+  arrange(desc(corte)) %>% 
+  mutate(probar = first(por_acierto) - last(por_acierto)) %>% 
+  ungroup() %>% 
+  mutate(disminuye = if_else(probar < 0, 1, 0),
+         porcentaje_manual = if_else(corte == 0, 0, 20))
+         
+p <- clases_no_borradas %>%
+  ggplot(aes(y = por_acierto * 100, x = d, alpha = 0.2, color = d, size = completa)) +
+  geom_jitter(alpha = 0.5) +
+  scale_size(range = c(1, 10)) +
+  labs(y = "porcentaje de acierto") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5),
+        axis.title.x = element_blank(),
+        legend.position = "none") 
+  
+
+p +  
+  transition_states(states = porcentaje_manual)  + 
+  labs(title = "Porcentaje codificado manualmente: {closest_state}") 
+
+```
+
+
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Problemas durante el entrenamiento
+
+Uno de los grandes problemas para la inteligencia artificial son los datos de entrenamiento 
+
+--
+
+**Retomemos la pregunta respecto a la diferencia entre los datos de entrenamiento y los predichos**
+
+--
+
+En enero de 2020, la Encuesta de Empleo comenzó a transitar hacia un levantamiento vía dispositivo móvil
+
+--
+
+Esto es algo positivo, pero introduce desafíos para la codificación 
+
+--
+
+**Si los textos levantados mediante tablet han cambiado respecto a los de papel, la predicción se dificulta**
+
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Cambios en el registro
+
+Analizamos los registros de actividad económica a lo largo de varios meses 
+
+
+.center[
+<img src="imagenes/palabras_glosa.png" width="600" />
+]
+
+--
+
+## Tenemos menos palabras por glosa
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Cambios en el registro
+
+.center[
+<img src="imagenes/riqueza_lexica.png" width="600" />
+]
+
+## Menor variedad de palabras
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Cambios en el registro
+
+.center[
+<img src="imagenes/largo_palabras.png" width="600" />
+]
+
+## Palabras más largas
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Cambios en el registro
+
+
+- Glosas más cortas
+
+--
+
+- Palabras más largas 
+
+--
+
+- Menor variedad de palabras
+
+--
+
+**Hipótesis:**
+
+Los encuestadores han transitado hacia un lenguaje más sucinto y con palabras que posiblemente estén más cargadas de significado. 
+
+--
+
+En principio, esto no es bueno ni malo. El lenguaje es dinámico
+
+--
+
+**Debemos implementar técnicas flexibles que se ajusten a esta realidad**
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Conclusiones
+
+Existe espacio para implementar nuevas mejoras en el proceso
+
+--
+
+Es importante monitorear las transformaciones en el modo de registro
+
+--
+
+Actualización periódica de los datos de entrenamiento
+
+- Actualmente, nuestra institución se encuentra desarrollando esta tarea
+
+--
+
+Es razonable utilizar una estrategia mixta de codificación 
+
+- Identificar los registros de mayor complejidad 
+
+- Codificar la mayor parte automáticamente y dejar lo difícil para un codificador entrenado
+
+
+--
+
+Existe un proyecto transversal en la institución que actualmente está estudiando estos temas
+
+**Proyecto Estratégico de Servicios Compartidos**
+
+
+---
+
+class: center, middle
+
+.linea-superior[]
+.linea-inferior[]
+<img src="imagenes/logo_portada2.png" width="200" />
+
+## Experiencia codificación automática INE Chile
+
+## Red de transmisión del conocimiento CEPAL
+
+## Codificación automatizada
+
+### Enero 2020
+
